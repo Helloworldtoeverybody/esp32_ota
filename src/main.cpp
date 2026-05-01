@@ -1,71 +1,56 @@
-#include <Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <HTTPUpdate.h>
-#include <ArduinoOTA.h>
+#include <Update.h>
+#include <WiFiClientSecure.h>
 
-const char* ssid = "NIKITOS"; // NIKITOS
-const char* password = "nikita1234"; // nikita1234
+const char* ssid = "YOUR_HOTSPOT";
+const char* password = "YOUR_PASS";
 
+const char* firmwareURL =
+"https://github.com/USER/REPO/releases/latest/download/firmware.bin";
 
-#ifndef FW_VERSION
-#define FW_VERSION "dev"
-#endif
+void updateFirmware() {
+  WiFiClientSecure client;
+  client.setInsecure();  // ⚠️ easy mode (skip cert validation)
 
+  HTTPClient http;
+  http.begin(client, firmwareURL);
 
-void checkForOTA() {
-  Serial.println("Checking for firmware update...");
+  int code = http.GET();
 
-  WiFiClient client;
-  client.setTimeout(15000);
+  if (code == HTTP_CODE_OK) {
 
-  httpUpdate.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+    int len = http.getSize();
+    WiFiClient *stream = http.getStreamPtr();
 
-String url = String("http://10.192.161.87:8080/firmware.bin") +
-             "?t=" + String(millis());
+    if (Update.begin(len)) {
+      size_t written = Update.writeStream(*stream);
 
-  t_httpUpdate_return ret = httpUpdate.update(client, url, FW_VERSION);
+      if (written == len) {
+        Serial.println("Update successful!");
+      }
 
-  switch (ret) {
-    case HTTP_UPDATE_FAILED:
-      Serial.printf("Update failed: %s\n",
-        httpUpdate.getLastErrorString().c_str());
-      break;
-
-    case HTTP_UPDATE_NO_UPDATES:
-      Serial.println("No update available");
-      break;
-
-    case HTTP_UPDATE_OK:
-      Serial.println("Update successful!");
-      break;
+      Update.end(true);
+    }
+  } else {
+    Serial.printf("HTTP error: %d\n", code);
   }
-}
 
+  http.end();
+}
 
 void setup() {
   Serial.begin(115200);
-  delay(2000);
-
-  Serial.println("Booting ESP32...");
-  Serial.printf("Firmware version: %s\n", FW_VERSION);
 
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
 
-  Serial.println("\nWiFi connected!");
+  Serial.println("\nWiFi connected");
 
-  delay(3000);
-
-  Serial.println("Checking for firmware update...");
-  checkForOTA();   
+  updateFirmware();
 }
 
-void loop() {
-  delay(10000);
-  checkForOTA();
-}
+void loop() {}
