@@ -2,7 +2,7 @@
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("ESP32, I'm gay!");
+  Serial.println("ESP32, I like 15 y.o girls!");
 }
 
 void loop() {
