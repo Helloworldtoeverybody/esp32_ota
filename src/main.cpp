@@ -8,7 +8,7 @@ const char* ssid = "NIKITOS"; // NIKITOS
 const char* password = "nikita1234"; // nikita1234
 
 
-
+#define FW_VERSION "1"
 
 
 
@@ -23,7 +23,7 @@ void checkForOTA() {
   const char* url =
     "http://10.192.161.87:8080/firmware.bin";
 
-  t_httpUpdate_return ret = httpUpdate.update(client, url);
+  t_httpUpdate_return ret = httpUpdate.update(client, url, FW_VERSION);
 
   switch (ret) {
     case HTTP_UPDATE_FAILED:
@@ -46,8 +46,7 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
-  Serial.println("Booting ESP32...Version 2");
-  Serial.println("Booting ESP32...Version 3");
+  Serial.println("Booting ESP32...");
 
   WiFi.begin(ssid, password);
 
