@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -18,10 +18,20 @@ jobs:
           python-version: "3.11"
 
       - name: Install PlatformIO
-        run: pip install platformio
+        run: |
+          pip install -U platformio
+
+      - name: Install ESP32 platform
+        run: |
+          pio platform install espressif32
 
       - name: Build firmware
-        run: pio run
+        run: |
+          pio run -e esp32dev
+
+      - name: Show build output
+        run: |
+          ls -R .pio/build
 
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
