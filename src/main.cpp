@@ -3,11 +3,11 @@
 #include <Update.h>
 #include <WiFiClientSecure.h>
 
-const char* ssid = "YOUR_HOTSPOT";
-const char* password = "YOUR_PASS";
+const char* ssid = "11PM";
+const char* password = "251161251161";
 
 const char* firmwareURL =
-"https://github.com/USER/REPO/releases/latest/download/firmware.bin";
+"https://github.com/Helloworldtoeverybody/esp32_ota/releases/latest/download/firmware.bin";
 
 void updateFirmware() {
   WiFiClientSecure client;
