@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-# 🔥 REQUIRED so GitHub can create releases
 permissions:
   contents: write
 
@@ -13,11 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Get repo
+      # 1. Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Python (PlatformIO needs it)
+      # 2. Setup Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -27,27 +26,30 @@ jobs:
       - name: Install PlatformIO
         run: pip install -U platformio
 
-      # 4. Build ESP32 firmware
+      # 4. Build firmware (AUTO VERSION INJECTION)
       - name: Build firmware
-        run: pio run -e esp32dev
+        run: |
+          VERSION=${{ github.run_number }}
+          export PLATFORMIO_BUILD_FLAGS="-DFW_VERSION=\"${VERSION}\""
+          pio run -e esp32dev
 
       # 5. Copy firmware to root
       - name: Prepare firmware file
         run: cp .pio/build/esp32dev/firmware.bin firmware.bin
 
-      # 6. Upload artifact (for debugging/download)
+      # 6. Upload artifact (debug)
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: firmware.bin
 
-      # 7. Create GitHub Release (THIS IS OTA SOURCE)
+      # 7. Create GitHub Release (OTA SOURCE)
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
-          name: Latest ESP32 Firmware
+          tag_name: v${{ github.run_number }}
+          name: ESP32 Firmware v${{ github.run_number }}
           files: firmware.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
