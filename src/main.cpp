@@ -8,8 +8,9 @@ const char* ssid = "NIKITOS"; // NIKITOS
 const char* password = "nikita1234"; // nikita1234
 
 
-#define FW_VERSION "3"
-
+#ifndef FW_VERSION
+#define FW_VERSION "dev"
+#endif
 
 
 void checkForOTA() {
@@ -46,12 +47,8 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
-  Serial.println("Booting ESP32...huhuhu");
-  Serial.println("Booting ESP32jhuhuhu");
-  
-  Serial.println("Booting ESP32jhuhuhu");
-  
-  Serial.println("Booting ESP32jhuhuhu");
+  Serial.println("Booting ESP32...");
+  Serial.printf("Firmware version: %s\n", FW_VERSION);
 
   WiFi.begin(ssid, password);
 
@@ -65,10 +62,10 @@ void setup() {
   delay(3000);
 
   Serial.println("Checking for firmware update...");
-  checkForOTA();   // ✔ ONLY HERE, ONCE
+  checkForOTA();   
 }
 
 void loop() {
-  delay(10000); // check every 60 seconds
+  delay(10000);
   checkForOTA();
 }
