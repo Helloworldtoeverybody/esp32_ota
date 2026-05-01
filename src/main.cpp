@@ -8,7 +8,7 @@ const char* ssid = "NIKITOS"; // NIKITOS
 const char* password = "nikita1234"; // nikita1234
 
 
-#define FW_VERSION "1"
+#define FW_VERSION "2"
 
 
 
@@ -46,7 +46,8 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
-  Serial.println("Booting ESP32...");
+  Serial.println("Booting ESP32...huhuhu");
+  Serial.println("Booting ESP32jhuhuhu");
 
   WiFi.begin(ssid, password);
 
