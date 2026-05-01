@@ -47,6 +47,7 @@ void setup() {
   delay(2000);
 
   Serial.println("Booting ESP32...Version 2");
+  Serial.println("Booting ESP32...Version 3");
 
   WiFi.begin(ssid, password);
 
