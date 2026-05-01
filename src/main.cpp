@@ -2,7 +2,7 @@
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("ESP32, I can fuck your mama!");
+  Serial.println("ESP32, I can fuck yma!");
 }
 
 void loop() {
