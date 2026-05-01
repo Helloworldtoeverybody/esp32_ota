@@ -1,9 +1,10 @@
-name: Build + Publish ESP32 Firmware
+name: ESP32 Build + OTA Release
 
 on:
   push:
     branches: [ "main" ]
 
+# 🔥 REQUIRED so GitHub can create releases
 permissions:
   contents: write
 
@@ -12,34 +13,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # 1. Get repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      # 2. Setup Python (PlatformIO needs it)
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # 3. Install PlatformIO
       - name: Install PlatformIO
-        run: pip install platformio
+        run: pip install -U platformio
 
+      # 4. Build ESP32 firmware
       - name: Build firmware
         run: pio run -e esp32dev
 
-      - name: Copy firmware
+      # 5. Copy firmware to root
+      - name: Prepare firmware file
         run: cp .pio/build/esp32dev/firmware.bin firmware.bin
 
-      # 🔥 THIS IS WHAT YOU WERE MISSING
+      # 6. Upload artifact (for debugging/download)
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: firmware.bin
 
-      - name: Create GitHub Release
+      # 7. Create GitHub Release (THIS IS OTA SOURCE)
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
+          name: Latest ESP32 Firmware
           files: firmware.bin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
